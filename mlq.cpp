@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void ejemplo();
+void ejemplo(); void menu();
 int arrSum(int n, int * arr);
 string processToString(int process);
 void printTable(int n, int * btArr, int * queuesArr, int * arriveTimes);
