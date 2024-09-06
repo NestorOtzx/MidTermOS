@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sstream>
+
 #define RRCODE 1
 #define FCFSCODE 2
 
@@ -80,34 +83,48 @@ int main()
     return 0;
 }
 
+string read(std::ifstream * file)
+{
+    string line;
+    getline(*file, line);
+    std::stringstream ss(line);
+    string val;
+    vector<string> splitvals;
+    while (ss>>val);
+        splitvals.push_back(val);
+    return splitvals[splitvals.size()-1];
+}
 
 
 void menu()
 {
-    int n;
-    cout<<"Ingrese el numero de procesos (0 para ejecutar el ejemplo)"<<endl;
-    cin>>n;
-    if (n > 0){
+    std::ifstream file("procesos_mlq.txt");
+  
+    // String to store each line of the file. 
+    string line; 
+
+    if (file.is_open()) { 
+        int n = stoi(read(&file));
         int * b_arr = (int*)malloc(sizeof(int)*n);
         int * a_arr = (int*)malloc(sizeof(int)*n);
-        int * q_arr = (int*)malloc(sizeof(int)*n);
+        int * q_arr = (int*)malloc(sizeof(int)*n);  
         int quantum = 3;
-        for (int i = 0; i<n; i++)
-        {
-            cout<<"Ingrese el At del proceso "<<processToString(i)<<": ";
-            cin>>a_arr[i];
-            cout<<"Ingrese el Bt del proceso "<<processToString(i)<<": ";
-            cin>>b_arr[i];
-            cout<<"Ingrese la cola Q a la que perenece el proceso "<<processToString(i)<<": ";
-            cin>>q_arr[i];
-        }
-        cout<<"Ingrese el quantum: ";
-        cin>>quantum;
+
+        read(&file); //linea de formato
+        for (int i = 0; i<n; i++) { a_arr[i]= stoi(read(&file)); }
+        read(&file); //linea de formato
+        for (int i = 0; i<n; i++) { b_arr[i]= stoi(read(&file)); }
+        read(&file); //linea de formato
+        for (int i = 0; i<n; i++) { q_arr[i]= stoi(read(&file)); }
+        read(&file); //linea de formato
+        quantum = stoi(read(&file));
+
         printTable(n, b_arr, q_arr, a_arr);
         mlq(n, b_arr,  q_arr, a_arr, quantum);
-    }else{
-        ejemplo();
-    }
+    } 
+    else { 
+        cerr << "ERROR OPENING PROGRAM FILE" << endl; 
+    } 
     cout<<"Adios."<<endl;
 }
 
@@ -133,19 +150,4 @@ void printTable(int n, int * btArr, int * queuesArr, int * arriveTimes){
     {  
         cout<<" "<<processToString(i)<<" |\t"<<arriveTimes[i]<<"\t|\t"<<btArr[i]<<"\t|\t"<< queuesArr[i]<<"\t|"<<endl;
     }
-}
-
-void ejemplo()
-{
-    int n = 5;
-    int * b_arr = (int*)malloc(sizeof(int)*n);
-    b_arr[0] = 3;b_arr[1] = 6;b_arr[2] = 8;b_arr[3] = 3; b_arr[4] = 5;
-    int * a_arr = (int*)malloc(sizeof(int)*n);
-    a_arr[0] = 0;a_arr[1] = 0;a_arr[2] = 0;a_arr[3] = 14; a_arr[4] = 14;
-    int * q_arr = (int*)malloc(sizeof(int)*n);
-    q_arr[0] = 1;q_arr[1] = 2;q_arr[2] = 1;q_arr[3] = 1; q_arr[4] = 2; 
-    int quantum = 3;
-
-    printTable(n, b_arr, q_arr, a_arr);
-    mlq(n, b_arr,  q_arr, a_arr, quantum);
 }

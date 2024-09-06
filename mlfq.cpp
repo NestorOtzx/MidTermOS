@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sstream>
 #define RRCODE 1
 #define FCFSCODE 2
 
@@ -113,32 +115,46 @@ int main()
 }
 
 
+string read(std::ifstream * file)
+{
+    string line;
+    getline(*file, line);
+    std::stringstream ss(line);
+    string val;
+    vector<string> splitvals;
+    while (ss>>val);
+        splitvals.push_back(val);
+    return splitvals[splitvals.size()-1];
+}
 
 void menu()
 {
-    int n;
-    cout<<"Ingrese el numero de procesos (0 para ejecutar el ejemplo)"<<endl;
-    cin>>n;
-    if (n > 0){
+    std::ifstream file("procesos_mlfq.txt");
+  
+    // String to store each line of the file. 
+    string line; 
+
+    if (file.is_open()) { 
+        int n = stoi(read(&file));
         int * b_arr = (int*)malloc(sizeof(int)*n);
         int * a_arr = (int*)malloc(sizeof(int)*n);
-        int quantum = 3, quantum1 = 6;
-        for (int i = 0; i<n; i++)
-        {
-            cout<<"Ingrese el At del proceso "<<processToString(i)<<": ";
-            cin>>a_arr[i];
-            cout<<"Ingrese el Bt del proceso "<<processToString(i)<<": ";
-            cin>>b_arr[i];
-        }
-        cout<<"Ingrese el quantum de Q1: ";
-        cin>>quantum;
-        cout<<"Ingrese el quantum para Q2: ";
-        cin>>quantum1;
+        int quantum = 3;
+        int quantum1 = 3;
+        
+        read(&file); //linea de formato
+        for (int i = 0; i<n; i++) { a_arr[i]= stoi(read(&file)); }
+        read(&file); //linea de formato
+        for (int i = 0; i<n; i++) { b_arr[i]= stoi(read(&file)); }
+        read(&file); //linea de formato
+        quantum = stoi(read(&file));
+        quantum1 = stoi(read(&file));
+
         printTable(n, b_arr, a_arr);
         mlfq(n, b_arr, a_arr, quantum, quantum1);
-    }else{
-        ejemplo();
-    }
+    } 
+    else { 
+        cerr << "ERROR OPENING PROGRAM FILE" << endl; 
+    } 
     cout<<"Adios."<<endl;
 }
 
@@ -159,7 +175,7 @@ string processToString(int process)
 
 void printTable(int n, int * btArr, int * arriveTimes){
     cout<<"---Table---"<<endl;
-    cout<<" P |\tAt\t|\tBt\t"<<endl;
+    cout<<" P |\tAt\t|\tBt\t|"<<endl;
     for (int i = 0; i<n; i++)
     {  
         cout<<" "<<processToString(i)<<" |\t"<<arriveTimes[i]<<"\t|\t"<<btArr[i]<<"\t|"<<endl;

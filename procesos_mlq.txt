@@ -1,0 +1,21 @@
+Numero de procesos = 5
+----Arrive time de procesos---
+p0 = 0
+p1 = 0
+p2 = 0
+p3 = 0
+p4 = 2
+----Burst time de procesos---
+p0 = 3
+p1 = 6
+p2 = 10
+p3 = 3
+p4 = 10
+----Prioridad de cada proceso----
+p0 = 1
+p1 = 2
+p2 = 1
+p3 = 1
+p4 = 2
+----Otros parametros----
+quantum = 3
