@@ -9,10 +9,14 @@
 
 using namespace std;
 
+int findLast(char letter, string s);
+void printMeasures(string timeline, int n, int* arriveTimes);
+int findWaitingTime(char letter, string s);
 void ejemplo(); void menu();
 int arrSum(int n, int * arr);
 string processToString(int process);
 void printTable(int n, int * btArr, int * queuesArr, int * arriveTimes);
+
 //MLQ CON Q1(RR(Quantum)) y Q2(FCFS)
 void mlq(int n, int * btArr, int * queuesArr, int * arriveTimes, int quantum)
 {
@@ -71,6 +75,7 @@ void mlq(int n, int * btArr, int * queuesArr, int * arriveTimes, int quantum)
     }
     
     cout<<"Diagrama de Gantt (cada letra indica el proceso que se ejecuto en ese segundo): \n"<<timeline<<endl;
+    printMeasures(timeline, n, arriveTimes);
 }
 
 
@@ -125,7 +130,7 @@ void menu()
     else { 
         cerr << "ERROR OPENING PROGRAM FILE" << endl; 
     } 
-    cout<<"Adios."<<endl;
+    
 }
 
 int arrSum(int n, int * arr)
@@ -145,9 +150,69 @@ string processToString(int process)
 
 void printTable(int n, int * btArr, int * queuesArr, int * arriveTimes){
     cout<<"---Table---"<<endl;
-    cout<<" P |\tAt\t|\tBt\t|\tQ\t|"<<endl;
+    cout<<" P\t|\tAt\t|\tBt\t|\tQ\t|"<<endl;
     for (int i = 0; i<n; i++)
     {  
-        cout<<" "<<processToString(i)<<" |\t"<<arriveTimes[i]<<"\t|\t"<<btArr[i]<<"\t|\t"<< queuesArr[i]<<"\t|"<<endl;
+        cout<<" "<<processToString(i)<<"\t|\t"<<arriveTimes[i]<<"\t|\t"<<btArr[i]<<"\t|\t"<< queuesArr[i]<<"\t|"<<endl;
     }
+    
+}
+
+void printMeasures(string timeline, int n, int * arriveTimes)
+{
+    cout<<"---Medidas---"<<endl;
+    cout<<" P\t|\tCT\t|\tTAT\t|\tWT\t|"<<endl;
+    float ctProm = 0.0f;
+    float tatProm = 0.0f;
+    float wtProm = 0.0f;
+    for (int i = 0; i<n; i++)
+    {  
+        float ct = findLast(processToString(i)[0], timeline)+1;
+        float wt = findWaitingTime(processToString(i)[0], timeline);
+        cout<<" "<<processToString(i)<<"\t|\t"<<ct<<"\t|\t"<<ct-arriveTimes[i]<<"\t|\t"<<wt<<"\t|"<<endl;
+        ctProm+=ct/n;
+        wtProm+=wt/n;
+        tatProm+=(ct-arriveTimes[i])/n;
+    }
+    cout<<" Medias: |\t"<<ctProm<<"\t|\t"<<tatProm<<"\t|\t"<<wtProm<<"\t|"<<endl;
+}
+
+int findLast(char letter, string s)
+{
+    int max = 0;
+    for (int i = s.size()-1; i>=0; i--)
+    {
+        if (letter == s[i])
+        {
+            max = i;
+            break;
+        }
+    }
+    return max;
+}
+
+//encuentra el primer elemento del ultimo bloque de ejecucion de un proceso
+int findWaitingTime(char letter, string s)
+{
+    int min = s.size()-1;
+    bool finding = false;
+    for (int i = s.size()-1; i>=0; i--)
+    {
+        if (letter == s[i])
+        {
+            finding = true;
+            min = i;
+        }else if (finding)
+        {
+            break;
+        }
+    }
+    for (int i = 0; i<min; i++)
+    {
+        if (letter == s[i])
+        {
+            min-=1;
+        }
+    }
+    return min;
 }

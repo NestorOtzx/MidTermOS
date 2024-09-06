@@ -4,7 +4,7 @@ p0 = 0
 p1 = 0
 p2 = 0
 p3 = 0
-p4 = 2
+p4 = 20
 ----Burst time de procesos---
 p0 = 3
 p1 = 6

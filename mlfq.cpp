@@ -8,6 +8,9 @@
 
 using namespace std;
 
+int findLast(char letter, string s);
+void printMeasures(string timeline, int n, int * arriveTimes);
+int findWaitingTime(char letter, string s);
 void ejemplo(); void menu();
 int arrSum(int n, int * arr);
 string processToString(int process);
@@ -105,6 +108,8 @@ void mlfq(int n, int * btArr, int * arriveTimes, int quantum, int quantum1)
     }
     
     cout<<"Diagrama de Gantt (cada letra indica el proceso que se ejecuto en ese segundo): \n"<<timeline<<endl;
+    
+    printMeasures(timeline,n, arriveTimes);
 }
 
 
@@ -156,6 +161,7 @@ void menu()
         cerr << "ERROR OPENING PROGRAM FILE" << endl; 
     } 
     cout<<"Adios."<<endl;
+    
 }
 
 int arrSum(int n, int * arr)
@@ -182,16 +188,62 @@ void printTable(int n, int * btArr, int * arriveTimes){
     }
 }
 
-void ejemplo()
+void printMeasures(string timeline, int n, int * arriveTimes)
 {
-    int n = 5;
-    int * b_arr = (int*)malloc(sizeof(int)*n);
-    b_arr[0] = 3;b_arr[1] = 6;b_arr[2] = 10;b_arr[3] = 3; b_arr[4] = 10;
-    int * a_arr = (int*)malloc(sizeof(int)*n);
-    a_arr[0] = 0;a_arr[1] = 0;a_arr[2] = 0;a_arr[3] = 0; a_arr[4] = 2;
-    int quantum = 3;
-    int quantum1 = 6;
+    cout<<"---Medidas---"<<endl;
+    cout<<" P\t|\tCT\t|\tTAT\t|\tWT\t|"<<endl;
+    float ctProm = 0.0f;
+    float tatProm = 0.0f;
+    float wtProm = 0.0f;
+    for (int i = 0; i<n; i++)
+    {  
+        float ct = findLast(processToString(i)[0], timeline)+1;
+        float wt = findWaitingTime(processToString(i)[0], timeline);
+        cout<<" "<<processToString(i)<<"\t|\t"<<ct<<"\t|\t"<<ct-arriveTimes[i]<<"\t|\t"<<wt<<"\t|"<<endl;
+        ctProm+=ct/n;
+        wtProm+=wt/n;
+        tatProm+=(ct-arriveTimes[i])/n;
+    }
+    cout<<" Medias: |\t"<<ctProm<<"\t|\t"<<tatProm<<"\t|\t"<<wtProm<<"\t|"<<endl;
+}
 
-    printTable(n, b_arr, a_arr);
-    mlfq(n, b_arr, a_arr, quantum, quantum1);
+
+int findLast(char letter, string s)
+{
+    int max = 0;
+    for (int i = s.size()-1; i>=0; i--)
+    {
+        if (letter == s[i])
+        {
+            max = i;
+            break;
+        }
+    }
+    return max;
+}
+
+//encuentra el primer elemento del ultimo bloque de ejecucion de un proceso
+int findWaitingTime(char letter, string s)
+{
+    int min = s.size()-1;
+    bool finding = false;
+    for (int i = s.size()-1; i>=0; i--)
+    {
+        if (letter == s[i])
+        {
+            finding = true;
+            min = i;
+        }else if (finding)
+        {
+            break;
+        }
+    }
+    for (int i = 0; i<min; i++)
+    {
+        if (letter == s[i])
+        {
+            min-=1;
+        }
+    }
+    return min;
 }

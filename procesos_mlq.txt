@@ -1,6 +1,6 @@
 Numero de procesos = 5
 ----Arrive time de procesos---
-p0 = 0
+p0 =    0
 p1 = 0
 p2 = 0
 p3 = 0
